@@ -1,0 +1,5 @@
+require 'cylon_arena/gui/gui_arena'
+require 'cylon_arena/gui/robot_wrapper'
+require 'cylon_arena/gui/explosion_wrapper'
+require 'cylon_arena/gui/bullet_wrapper'
+require 'cylon_arena/gui/leaderboard'

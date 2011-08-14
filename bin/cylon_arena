@@ -1,0 +1,70 @@
+#!/usr/bin/env ruby
+
+require "cylon_arena"
+require "optparse"
+require "ostruct"
+
+class OptionsParser
+  def self.parse!(args)
+    options = OpenStruct.new
+    options.resolution  = [800,800]
+    options.match = Time.now.to_i + Process.pid
+    options.gui = true
+    options.timeout = 50000
+
+    opts = OptionParser.new do |opts|
+      opts.banner = "Usage: cylon_arena [options] file1 file2 ..."
+
+      opts.on("--resolution x,y", Array, "X and Y resolution") do |resolution|
+        options.resolution = resolution.map &:to_i
+      end
+
+      opts.on("--match N", Integer, "Replay match number N") do |n|
+        options.match = n
+      end
+
+      opts.on("--timeout N", Integer, "Maximum number of ticks for a match") do |n|
+        options.timeout = n
+      end
+
+      opts.on("--[no-]gui", "Run the match with the GUI") do |y|
+        options.gui = y
+      end
+
+      opts.on_tail("-h", "--help", "Show this message") do
+        puts opts
+        exit
+      end
+    end
+    opts.parse!(args)
+    if ARGV.size == 0
+      puts opts
+      exit
+    end
+    return options
+  end
+end
+
+def scripts_to_objects(ai_scripts)
+  ais = ai_scripts.map do |script|
+    require "./" + script
+    name = File.basename(script).sub(/\..*$/, '')
+    name[0] = name[0,1].upcase
+    Object.const_get(name).new
+  end
+end
+
+def run(options, ai_scripts)
+  ais = scripts_to_objects(ai_scripts)
+  width,height = options.resolution
+  arena = CylonArena::Arena.new(width, height, options.match, options.timeout, ais)
+  
+  require "cylon_arena/gui"
+  gui = CylonArena::GuiArena.new(width, height, arena)
+  gui.show
+end
+
+options = OptionsParser.parse!(ARGV)
+ai_scripts = ARGV
+
+run(options, ai_scripts)
