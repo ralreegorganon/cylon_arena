@@ -18,10 +18,9 @@ module CylonArena
       
       @arena.robots.each do |robot|
         if (robot != origin) && (Math.hypot(@y - robot.y, robot.x - @x) < 40) && (!robot.dead?)  
-          explosion = Explosion.new(@arena, robot.x, robot.y)
-          @arena.add_explosion(explosion)
           robot.hit(self)
           @dead = true
+          fire_event :bullet_collision, robot
         end
       end
     end

@@ -1,7 +1,6 @@
 require "cylon_arena/version"
 require "cylon_arena/ai"
 require "cylon_arena/arena"
-require "cylon_arena/explosion"
 require "cylon_arena/events/robot_scanned_event"
 require "cylon_arena/events/damage_taken_event"
 require "cylon_arena/game_objects/game_object"

@@ -1,12 +1,12 @@
 module CylonArena
   class Arena
-    attr_accessor :robots, :bullets, :explosions
+    attr_accessor :robots, :bullets
     attr_accessor :width, :height, :time
     
     def initialize(width, height, match, timeout, ais)
       @width, @height, @timeout, @time = width, height, timeout, 0
       srand(match)    
-      @robots, @bullets, @explosions = [],[],[]
+      @robots, @bullets = [],[]
       ais.each {|ai| add_robot_with_ai(ai)}     
     end
     
@@ -19,14 +19,7 @@ module CylonArena
       @bullets << bullet
     end
     
-    def add_explosion(explosion)
-      @explosions << explosion
-    end
-    
-    def tick   
-      @explosions.delete_if(&:dead)
-      @explosions.each(&:tick)
-        
+    def tick           
       @bullets.delete_if(&:dead)
       @bullets.each(&:tick)
     

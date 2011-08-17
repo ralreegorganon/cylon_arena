@@ -11,6 +11,11 @@ module CylonArena
       @arena = arena
       intialize_wrappers(@arena.robots)
       @leaderboard = Leaderboard.new(self, @arena.robots)
+      @explosions = []
+      
+      Bullet.on_event(:bullet_collision) do |bullet, robot| 
+        @explosions << Explosion.new(self, robot.x, robot.y)
+      end
     end
     
     def intialize_wrappers(robots)
@@ -20,7 +25,6 @@ module CylonArena
       end
       
       @bullet_wrapper =  BulletWrapper.new(self)
-      @explosion_wrapper = ExplosionWrapper.new(self)
     end
     
     def draw
@@ -28,7 +32,7 @@ module CylonArena
       @arena.tick
       draw_robots(@arena.robots)
       draw_bullets(@arena.bullets)
-      draw_explosions(@arena.explosions)
+      draw_explosions
       @leaderboard.draw
     end
     
@@ -44,10 +48,7 @@ module CylonArena
           robot.x,  self.height-robot.y, Gosu::Color::WHITE,
            (robot.x + Math::sin(robot.radar_heading * Math::PI / 180.0) * 1200), self.height - (robot.y + Math::cos(robot.radar_heading * Math::PI / 180.0) * 1200), Gosu::Color::WHITE,
               (robot.x + Math::sin(robot.old_radar_heading * Math::PI / 180.0) * 1200), self.height - (robot.y + Math::cos(robot.old_radar_heading * Math::PI / 180.0) * 1200), Gosu::Color::WHITE
-                  )
-                  
-
-                  
+                  )   
       end
     end
     
@@ -57,9 +58,11 @@ module CylonArena
       end
     end
     
-    def draw_explosions(explosions)
-      explosions.each do |explosion|
-        @explosion_wrapper.image_sequence[explosion.t].draw_rot(explosion.x, self.height - explosion.y, ZOrder::Explosions,0)
+    def draw_explosions()
+      @explosions.delete_if(&:dead)
+      @explosions.each do |explosion|
+        explosion.image_sequence[explosion.t].draw_rot(explosion.x, self.height - explosion.y, ZOrder::Explosions,0)
+        explosion.tick
       end
     end
     
