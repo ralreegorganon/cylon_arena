@@ -43,12 +43,7 @@ module CylonArena
         @robot_wrappers[robot].gun_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.gun_heading)
         @robot_wrappers[robot].radar_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.radar_heading)
         
-        #draw_triangle()
-        self.draw_triangle( 
-          robot.x,  self.height-robot.y, Gosu::Color::WHITE,
-           (robot.x + Math::sin(robot.radar_heading * Math::PI / 180.0) * 1200), self.height - (robot.y + Math::cos(robot.radar_heading * Math::PI / 180.0) * 1200), Gosu::Color::WHITE,
-              (robot.x + Math::sin(robot.old_radar_heading * Math::PI / 180.0) * 1200), self.height - (robot.y + Math::cos(robot.old_radar_heading * Math::PI / 180.0) * 1200), Gosu::Color::WHITE
-                  )   
+        robot.ai.draw(self, robot.proxy) if robot.ai.respond_to?(:draw) 
       end
     end
     

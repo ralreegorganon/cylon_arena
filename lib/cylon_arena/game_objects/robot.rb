@@ -4,6 +4,7 @@ module CylonArena
     attr_accessor :energy, :heat
     attr_accessor :gun_heading, :radar_heading, :old_radar_heading
     attr_accessor :events
+    attr_accessor :proxy
     
     def initialize(ai, arena)
       @arena = arena
@@ -80,15 +81,15 @@ module CylonArena
     end
     
     def tick
+      @proxy = generate_proxy
       @old_radar_heading = @radar_heading
-      proxy = generate_proxy
-      @ai.tick(proxy)
+      @ai.tick(@proxy)
       @events.clear
-      fire(proxy.actions[:fire]) if proxy.actions.has_key? :fire
-      turn(proxy.actions[:turn]) if proxy.actions.has_key? :turn
-      turn_gun(proxy.actions[:turn_gun]) if proxy.actions.has_key? :turn_gun
-      turn_radar(proxy.actions[:turn_radar]) if proxy.actions.has_key? :turn_radar
-      accelerate(proxy.actions[:accelerate]) if proxy.actions.has_key? :accelerate
+      fire(@proxy.actions[:fire]) if @proxy.actions.has_key? :fire
+      turn(@proxy.actions[:turn]) if @proxy.actions.has_key? :turn
+      turn_gun(@proxy.actions[:turn_gun]) if @proxy.actions.has_key? :turn_gun
+      turn_radar(@proxy.actions[:turn_radar]) if @proxy.actions.has_key? :turn_radar
+      accelerate(@proxy.actions[:accelerate]) if @proxy.actions.has_key? :accelerate
       super
       @x = clamp(@x, @size, @arena.width-@size)
       @y = clamp(@y, @size, @arena.height-@size)
@@ -106,6 +107,7 @@ module CylonArena
         :heading => @heading, 
         :gun_heading => @gun_heading, 
         :radar_heading => @radar_heading,
+        :old_radar_heading => @old_radar_heading,
         :time => @arena.time,
         :width => @arena.width,
         :height => @arena.height,

@@ -1,6 +1,6 @@
 module CylonArena
   class RobotProxy
-    attr_reader :x, :y, :energy, :heat, :velocity, :heading, :gun_heading, :radar_heading 
+    attr_reader :x, :y, :energy, :heat, :velocity, :heading, :gun_heading, :radar_heading, :old_radar_heading 
     attr_reader :time, :width, :height
     attr_reader :events
     attr_reader :actions
