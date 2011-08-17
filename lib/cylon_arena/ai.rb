@@ -1,5 +1,5 @@
 module CylonArena
-  class AI
+  class AI    
     def tick(robot)
       
     end

@@ -6,8 +6,9 @@ module CylonArena
   end
   
   class GuiArena < Gosu::Window    
-    def initialize(width, height, arena)
+    def initialize(width, height, arena, draw)
       super(width, height, false, 16)
+      @draw = draw
       @arena = arena
       intialize_wrappers(@arena.robots)
       @leaderboard = Leaderboard.new(self, @arena.robots)
@@ -43,7 +44,7 @@ module CylonArena
         @robot_wrappers[robot].gun_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.gun_heading)
         @robot_wrappers[robot].radar_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.radar_heading)
         
-        robot.ai.draw(self, robot.proxy) if robot.ai.respond_to?(:draw) 
+        robot.ai.draw(self, robot.proxy) if robot.ai.respond_to?(:draw) and @draw
       end
     end
     

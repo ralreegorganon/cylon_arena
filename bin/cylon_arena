@@ -11,6 +11,7 @@ class OptionsParser
     options.match = Time.now.to_i + Process.pid
     options.gui = true
     options.timeout = 50000
+    options.draw = false
 
     opts = OptionParser.new do |opts|
       opts.banner = "Usage: cylon_arena [options] file1 file2 ..."
@@ -29,6 +30,10 @@ class OptionsParser
 
       opts.on("--[no-]gui", "Run the match with the GUI") do |y|
         options.gui = y
+      end
+      
+      opts.on("--draw", "Allow bots to draw") do |y|
+        options.draw = y
       end
 
       opts.on_tail("-h", "--help", "Show this message") do
@@ -60,7 +65,7 @@ def run(options, ai_scripts)
   arena = CylonArena::Arena.new(width, height, options.match, options.timeout, ais)
   
   require "cylon_arena/gui"
-  gui = CylonArena::GuiArena.new(width, height, arena)
+  gui = CylonArena::GuiArena.new(width, height, arena, options.draw)
   gui.show
 end
 
