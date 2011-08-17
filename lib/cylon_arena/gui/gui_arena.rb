@@ -11,7 +11,7 @@ module CylonArena
       @draw = draw
       @arena = arena
       intialize_wrappers(@arena.robots)
-      @leaderboard = Leaderboard.new(self, @arena.robots)
+      @leaderboard = Leaderboard.new(self, @robot_wrappers)
       @explosions = []
       
       Bullet.on_event(:bullet_collision) do |bullet, robot| 
@@ -22,7 +22,7 @@ module CylonArena
     def intialize_wrappers(robots)
       @robot_wrappers = {}
       robots.each_with_index do |robot, i|
-        @robot_wrappers[robot] = RobotWrapper.new(self,robot,i)
+        @robot_wrappers[robot] = RobotWrapper.new(self,i)
       end
       
       @bullet_wrapper =  BulletWrapper.new(self)
