@@ -8,21 +8,19 @@ module CylonArena
   class GuiArena < Gosu::Window    
     def initialize(width, height, arena, draw)
       super(width, height, false, 16)
-      @draw = draw
-      @arena = arena
-      intialize_wrappers(@arena.robots)
+      @draw, @arena = draw, arena
+      @explosions, @robot_wrappers = [], []
+      intialize_wrappers
       @leaderboard = Leaderboard.new(self, @robot_wrappers)
-      @explosions = []
       
       Bullet.on_event(:bullet_collision) do |bullet, robot| 
         @explosions << Explosion.new(self, robot.x, robot.y)
       end
     end
     
-    def intialize_wrappers(robots)
-      @robot_wrappers = {}
-      robots.each_with_index do |robot, i|
-        @robot_wrappers[robot] = RobotWrapper.new(self,i)
+    def intialize_wrappers
+      @arena.robots.each_with_index do |robot, i|
+        @robot_wrappers << RobotWrapper.new(self, robot, i, @draw)
       end
       
       @bullet_wrapper =  BulletWrapper.new(self)
@@ -31,21 +29,17 @@ module CylonArena
     def draw
       process_keys   
       @arena.tick
-      draw_robots(@arena.robots)
+      draw_robots
       draw_bullets(@arena.bullets)
       draw_explosions
       @leaderboard.draw
     end
     
-    def draw_robots(robots)
-      robots.each_with_index do |robot, i|
-        next if robot.dead?
-        @robot_wrappers[robot].body_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.heading)
-        @robot_wrappers[robot].gun_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.gun_heading)
-        @robot_wrappers[robot].radar_image.draw_rot(robot.x, self.height - robot.y, ZOrder::Robot, robot.radar_heading)
-        
-        robot.ai.draw(self, robot.proxy) if robot.ai.respond_to?(:draw) and @draw
+    def draw_robots
+      @robot_wrappers.each do |wrapper|
+        wrapper.draw
       end
+      
     end
     
     def draw_bullets(bullets)
