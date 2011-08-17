@@ -1,18 +1,22 @@
 module CylonArena
   class Robot < GameObject
-    attr_accessor :ai
-    attr_accessor :energy, :heat
-    attr_accessor :gun_heading, :radar_heading, :old_radar_heading
+    attr_accessor :ai, :arena, :proxy
+    attr_accessor :size, :energy, :heat, :gun_heading, :radar_heading, :old_radar_heading
     attr_accessor :ai_events
-    attr_accessor :proxy
     
-    def initialize(ai, arena)
-      @arena = arena
-      @ai = ai
-      @size = 40
-      @heat, @energy = 0, 100
-      @x, @y, @heading, @gun_heading, @radar_heading, @old_radar_heading, @velocity = rand(800),rand(800), 0,0,0,0,0
-      @ai_events = Hash.new{|h, k| h[k]=[]}
+    def initialize(ai, arena, args={})
+      super()
+      {
+        :x => rand(arena.width),
+        :y => rand(arena.height),
+        :gun_heading => rand(360),
+        :size => 40, 
+        :heat => 0, 
+        :energy => 100
+      }.merge!(args).each { |k,v| send("#{k}=", v) }
+      
+      @arena, @ai, @ai_events = arena, ai, Hash.new{|h, k| h[k]=[]}
+      @radar_heading = @old_radar_heading = @gun_heading      
     end
         
     def turn(degrees)
@@ -49,7 +53,7 @@ module CylonArena
       return if @heat != 0
       firepower = clamp(firepower,0.1,3)
       @heat += 1.0 + firepower/5.0
-      bullet = Bullet.new(@arena, @x, @y, @gun_heading, 20.0-3.0*firepower, 4.0*firepower, self)
+      bullet = Bullet.new(:x => @x, :y => @y, :heading => @gun_heading, :velocity => 20.0-3.0*firepower, :firepower => 4.0*firepower, :origin => self, :arena => @arena)
       @arena.add_bullet(bullet)
     end
     
@@ -60,7 +64,7 @@ module CylonArena
     def hit(bullet)
       @energy -= bullet.firepower
       @dead = @energy <= 0
-      @ai_events[:damage_taken] << DamageTakenEvent.new(bullet.firepower, @energy)
+      @ai_events[:damage_taken] << DamageTakenEvent.new(:damage => bullet.firepower, :energy_remaining => @energy)
     end
     
     def scan
@@ -74,7 +78,7 @@ module CylonArena
         
           if ((in_range_inc && !in_range_dec) || (!in_range_inc && in_range_dec)) && (target_diff_degrees <= scan_degrees) 
             distance = Math.hypot(robot.y - @y, robot.x - @x)
-            @ai_events[:robot_scanned] << RobotScannedEvent.new(distance)
+            @ai_events[:robot_scanned] << RobotScannedEvent.new(:distance => distance)
           end
         end
       end

@@ -5,10 +5,8 @@ module CylonArena
     attr_reader :events
     attr_reader :actions
     
-    def initialize(opts)
-      opts.each do |name, value|
-        instance_variable_set("@#{name}",value)
-      end
+    def initialize(args={})
+      args.each { |k,v| instance_variable_set("@#{k}",v) }
     end
     
     def turn(degrees)

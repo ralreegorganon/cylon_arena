@@ -1,10 +1,9 @@
 module CylonArena
   class GameObject
-    @@events = Hash.new{|h, k| h[k]=[]}
-    
     attr_accessor :x, :y, :heading, :velocity, :dead
-    def initialize(x, y, heading, velocity)
-      @x, @y, @heading, @velocity = x, y, heading, velocity, false
+    
+    def initialize
+      @x, @y, @heading, @velocity, @dead = 0,0,0,0,false
     end
     
     def tick
@@ -16,6 +15,7 @@ module CylonArena
       return @dead
     end
     
+    @@events = Hash.new{|h, k| h[k]=[]}
     def self.on_event(event, &block)
       @@events[event] << block
     end
@@ -24,6 +24,5 @@ module CylonArena
       data = [self] + args
       @@events[event].each {|e| e.call *data}
     end
-
   end
 end

@@ -1,11 +1,18 @@
 module CylonArena
   class Arena
     attr_accessor :robots, :bullets
-    attr_accessor :width, :height, :time
+    attr_accessor :width, :height, :match, :timeout, :time
     
-    def initialize(width, height, match, timeout, ais)
-      @width, @height, @timeout, @time = width, height, timeout, 0
-      srand(match)    
+    def initialize(ais, options={})
+      {
+        :width => 800, 
+        :height => 800, 
+        :match => Time.now.to_i + Process.pid,
+        :timeout => 10000,
+        :time => 0
+      }.merge!(options).each { |k,v| send("#{k}=", v) }
+      
+      srand(@match)    
       @robots, @bullets = [],[]
       ais.each {|ai| add_robot_with_ai(ai)}     
     end
@@ -19,7 +26,7 @@ module CylonArena
       @bullets << bullet
     end
     
-    def tick           
+    def tick       
       @bullets.delete_if(&:dead)
       @bullets.each(&:tick)
     
