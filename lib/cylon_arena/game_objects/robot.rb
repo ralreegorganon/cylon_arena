@@ -3,7 +3,7 @@ module CylonArena
     attr_accessor :ai
     attr_accessor :energy, :heat
     attr_accessor :gun_heading, :radar_heading, :old_radar_heading
-    attr_accessor :events
+    attr_accessor :ai_events
     attr_accessor :proxy
     
     def initialize(ai, arena)
@@ -12,7 +12,7 @@ module CylonArena
       @size = 40
       @heat, @energy = 0, 100
       @x, @y, @heading, @gun_heading, @radar_heading, @old_radar_heading, @velocity = rand(800),rand(800), 0,0,0,0,0
-      @events = Hash.new{|h, k| h[k]=[]}
+      @ai_events = Hash.new{|h, k| h[k]=[]}
     end
         
     def turn(degrees)
@@ -60,7 +60,7 @@ module CylonArena
     def hit(bullet)
       @energy -= bullet.firepower
       @dead = @energy <= 0
-      @events[:damage_taken] << DamageTakenEvent.new(bullet.firepower, @energy)
+      @ai_events[:damage_taken] << DamageTakenEvent.new(bullet.firepower, @energy)
     end
     
     def scan
@@ -74,7 +74,7 @@ module CylonArena
         
           if ((in_range_inc && !in_range_dec) || (!in_range_inc && in_range_dec)) && (target_diff_degrees <= scan_degrees) 
             distance = Math.hypot(robot.y - @y, robot.x - @x)
-            @events[:robot_scanned] << RobotScannedEvent.new(distance)
+            @ai_events[:robot_scanned] << RobotScannedEvent.new(distance)
           end
         end
       end
@@ -84,7 +84,7 @@ module CylonArena
       @proxy = generate_proxy
       @old_radar_heading = @radar_heading
       @ai.tick(@proxy)
-      @events.clear
+      @ai_events.clear
       fire(@proxy.actions[:fire]) if @proxy.actions.has_key? :fire
       turn(@proxy.actions[:turn]) if @proxy.actions.has_key? :turn
       turn_gun(@proxy.actions[:turn_gun]) if @proxy.actions.has_key? :turn_gun
@@ -112,7 +112,7 @@ module CylonArena
         :width => @arena.width,
         :height => @arena.height,
         :actions => {},
-        :events => @events
+        :events => @ai_events
       }
       
       RobotProxy.new(state)
