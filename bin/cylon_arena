@@ -12,6 +12,8 @@ class OptionsParser
     options.gui = true
     options.timeout = 50000
     options.draw = false
+    options.step = false
+    options.rate = 16
 
     opts = OptionParser.new do |opts|
       opts.banner = "Usage: cylon_arena [options] file1 file2 ..."
@@ -34,6 +36,14 @@ class OptionsParser
       
       opts.on("--draw", "Allow bots to draw") do |y|
         options.draw = y
+      end
+      
+      opts.on("--step", "Only update when the spacebar is pressed") do |y|
+        options.step = y
+      end
+      
+      opts.on("--rate N", Integer, "Update rate") do |n|
+        options.rate = n
       end
 
       opts.on_tail("-h", "--help", "Show this message") do
@@ -65,7 +75,7 @@ def run(options, ai_scripts)
   arena = CylonArena::Arena.new(ais, :width => width, :height => height, :match => options.match, :timeout => options.timeout)
   
   require "cylon_arena/gui"
-  gui = CylonArena::GuiArena.new(width, height, arena, options.draw)
+  gui = CylonArena::GuiArena.new(width, height, arena, options.draw, options.step, options.rate)
   gui.show
 end
 

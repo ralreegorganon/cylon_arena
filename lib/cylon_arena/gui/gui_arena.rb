@@ -6,12 +6,13 @@ module CylonArena
   end
   
   class GuiArena < Gosu::Window    
-    def initialize(width, height, arena, draw)
-      super(width, height, false, 16)
-      @draw, @arena = draw, arena
+    def initialize(width, height, arena, draw, step, rate)
+      super(width, height, false, rate)
+      @draw, @arena, @step = draw, arena, step
       @explosions, @robot_wrappers = [], []
       intialize_wrappers
       @leaderboard = Leaderboard.new(self, @robot_wrappers)
+      @can_tick = true
       
       Bullet.on_event(:bullet_collision) do |bullet, robot| 
         @explosions << Explosion.new(self, robot.x, robot.y)
@@ -27,12 +28,13 @@ module CylonArena
     end
     
     def draw
-      process_keys      
-      @arena.tick
+      process_keys   
+      @arena.tick if @can_tick or not @step  
       draw_robots
       draw_bullets(@arena.bullets)
       draw_explosions
       @leaderboard.draw
+      @can_tick = false
     end
     
     def draw_robots
@@ -59,6 +61,9 @@ module CylonArena
     def process_keys
       if button_down? Gosu::Button::KbEscape
         self.close
+      end
+      if button_down? Gosu::Button::KbSpace
+        @can_tick = true
       end
     end
   end
