@@ -20,7 +20,7 @@ module CylonArena
     end
         
     def turn(degrees)
-      degrees = clamp(degrees, -20, 20)
+      degrees = clamp(degrees, -10, 10)
       @heading += degrees
       @gun_heading += degrees
       @radar_heading += degrees
@@ -38,7 +38,7 @@ module CylonArena
     end
     
     def turn_radar(degrees)
-      degrees = clamp(degrees, -20, 20)
+      degrees = clamp(degrees, -45, 45)
       @radar_heading += degrees
       @radar_heading %= 360
     end

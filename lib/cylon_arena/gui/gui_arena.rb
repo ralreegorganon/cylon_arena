@@ -27,7 +27,7 @@ module CylonArena
     end
     
     def draw
-      process_keys   
+      process_keys      
       @arena.tick
       draw_robots
       draw_bullets(@arena.bullets)
