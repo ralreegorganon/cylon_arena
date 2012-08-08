@@ -85,10 +85,11 @@ module CylonArena
     end
     
     def tick
-      puts to_ai_tick_json
+      ai_tick_json = to_ai_tick_json
       @proxy = generate_proxy
       @old_radar_heading = @radar_heading
-      @ai.tick(@proxy)
+      #@ai.tick(@proxy)
+      rpc_tick(ai_tick_json, @proxy)
       @ai_events.clear
       fire(@proxy.actions[:fire]) if @proxy.actions.has_key? :fire
       turn(@proxy.actions[:turn]) if @proxy.actions.has_key? :turn
@@ -141,6 +142,13 @@ module CylonArena
         :old_radar_heading => @old_radar_heading,
         :events => @ai_events
       }.to_json
+    end
+    
+    def rpc_tick(json, proxy)
+      @ai[:stdin].puts json
+      response = @ai[:stdout].gets
+      parsed = JSON.parse(response, :symbolize_names => true)
+      proxy.actions.merge!(parsed[:actions])
     end
   end
 end
