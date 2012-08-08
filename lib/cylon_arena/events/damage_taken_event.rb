@@ -7,5 +7,12 @@ module CylonArena
          :energy_remaining => 0
       }.merge!(args).each { |k,v| send("#{k}=", v) }
     end
+
+    def to_json(*a)
+    	{ 
+    		:damage => @damage, 
+    		:energy_remaining => @energy_remaining
+		}.to_json(*a) 
+    end
   end
 end

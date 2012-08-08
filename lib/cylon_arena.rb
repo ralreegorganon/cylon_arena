@@ -1,3 +1,4 @@
+require "json"
 require "cylon_arena/version"
 require "cylon_arena/ai"
 require "cylon_arena/arena"

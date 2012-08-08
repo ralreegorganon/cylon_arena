@@ -14,7 +14,9 @@ module CylonArena
       
       srand(@match)    
       @robots, @bullets = [],[]
-      ais.each {|ai| add_robot_with_ai(ai)}     
+      ais.each {|ai| add_robot_with_ai(ai)}    
+
+      puts to_match_attribute_json 
     end
     
     def add_robot_with_ai(ai)
@@ -35,6 +37,15 @@ module CylonArena
       end
       
       @time += 1
+    end
+
+    def to_match_attribute_json
+      {
+        :width => @width,
+        :height => @height,
+        :match => @match,
+        :timeout => @timeout,
+      }.to_json
     end
   end
 end

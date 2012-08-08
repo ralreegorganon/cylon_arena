@@ -85,6 +85,7 @@ module CylonArena
     end
     
     def tick
+      puts to_ai_tick_json
       @proxy = generate_proxy
       @old_radar_heading = @radar_heading
       @ai.tick(@proxy)
@@ -124,6 +125,22 @@ module CylonArena
     
     def clamp(value, min, max)
       [min,[value,max].min].max
+    end
+
+    def to_ai_tick_json
+      {
+        :tick => @arena.time,
+        :x => @x, 
+        :y => @y, 
+        :energy => @energy, 
+        :heat => @heat, 
+        :velocity => @velocity, 
+        :heading => @heading, 
+        :gun_heading => @gun_heading, 
+        :radar_heading => @radar_heading,
+        :old_radar_heading => @old_radar_heading,
+        :events => @ai_events
+      }.to_json
     end
   end
 end
