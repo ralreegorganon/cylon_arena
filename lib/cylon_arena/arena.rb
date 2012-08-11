@@ -14,12 +14,11 @@ module CylonArena
       
       srand(@match)    
       @robots, @bullets = [],[]
-      ais.each {|ai| add_robot_with_ai(ai)}    
-
-      puts to_match_attribute_json 
+      ais.each {|ai| add_robot_with_ai(ai)}
     end
     
     def add_robot_with_ai(ai)
+      ai[:stdin].puts to_match_attribute_json
       robot = Robot.new(ai, self)
       @robots << robot
     end

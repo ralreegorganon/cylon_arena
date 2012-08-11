@@ -60,15 +60,6 @@ class OptionsParser
   end
 end
 
-def scripts_to_objects(ai_scripts)
-  ais = ai_scripts.map do |script|
-    require "./" + script
-    name = File.basename(script).sub(/\..*$/, '')
-    name[0] = name[0,1].upcase
-    Object.const_get(name).new
-  end
-end
-
 def scripts_to_processes(ai_scripts)
   ais = ai_scripts.map do |script|
     stdin, stdout, wait_thr = Open3.popen2(script) 
@@ -77,14 +68,19 @@ def scripts_to_processes(ai_scripts)
 end
 
 def run(options, ai_scripts)
-  #ais = scripts_to_objects(ai_scripts)
   @ais = scripts_to_processes(ai_scripts)
   width,height = options.resolution
   arena = CylonArena::Arena.new(@ais, :width => width, :height => height, :match => options.match, :timeout => options.timeout)
   
-  require "cylon_arena/gui"
-  gui = CylonArena::GuiArena.new(width, height, arena, options.draw, options.step, options.rate)
-  gui.show
+  if(options.gui)
+    require "cylon_arena/gui"
+    gui = CylonArena::GuiArena.new(width, height, arena, options.draw, options.step, options.rate)
+    gui.show
+  else
+    while true
+      arena.tick
+    end
+  end
 end
 
 def cleanup

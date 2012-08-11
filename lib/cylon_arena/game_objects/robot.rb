@@ -130,7 +130,7 @@ module CylonArena
 
     def to_ai_tick_json
       {
-        :tick => @arena.time,
+        :time => @arena.time,
         :x => @x, 
         :y => @y, 
         :energy => @energy, 
@@ -140,6 +140,7 @@ module CylonArena
         :gun_heading => @gun_heading, 
         :radar_heading => @radar_heading,
         :old_radar_heading => @old_radar_heading,
+        :actions => {},
         :events => @ai_events
       }.to_json
     end
